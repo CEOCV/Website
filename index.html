@@ -2843,6 +2843,41 @@
         min-height: 100vh !important;
     }
 </style>
+
+<script>
+(function() {
+    function hideBanners() {
+        const blacklist = [
+            '#WIX_ADS', 
+            '.ytGGBw', 
+            '.czJOIz', 
+            '[class*="FreemiumBanner"]',
+            '#singlefile-infobar',
+            '.singlefile-infobar'
+        ];
+        blacklist.forEach(selector => {
+            const elements = document.querySelectorAll(selector);
+            elements.forEach(el => {
+                el.style.setProperty('display', 'none', 'important');
+                el.style.setProperty('visibility', 'hidden', 'important');
+                el.style.setProperty('opacity', '0', 'important');
+                el.style.setProperty('pointer-events', 'none', 'important');
+                el.style.setProperty('z-index', '-1', 'important');
+            });
+        });
+    }
+
+    // Run immediately
+    hideBanners();
+
+    // Run on load
+    window.addEventListener('load', hideBanners);
+
+    // Watch for dynamic additions (some banners inject late)
+    const observer = new MutationObserver(hideBanners);
+    observer.observe(document.documentElement, { childList: true, subtree: true });
+})();
+</script>
 </body>
 
 
