@@ -2878,6 +2878,63 @@
     observer.observe(document.documentElement, { childList: true, subtree: true });
 })();
 </script>
+
+<script>
+(function() {
+    function purgeAds() {
+        // Broad selectors for Wix Free Plan banners and info icons
+        const selectors = [
+            '#WIX_ADS',
+            '[id^="WIX_ADS"]',
+            '.ytGGBw',
+            '.czJOIz',
+            '.rG8_mY',
+            '[class*="FreemiumBanner"]',
+            'a[href*="wix.com"]',
+            '#singlefile-infobar',
+            '.singlefile-infobar'
+        ];
+        
+        selectors.forEach(s => {
+            document.querySelectorAll(s).forEach(el => {
+                el.style.setProperty('display', 'none', 'important');
+                el.style.setProperty('visibility', 'hidden', 'important');
+                el.style.setProperty('opacity', '0', 'important');
+                el.style.setProperty('pointer-events', 'none', 'important');
+                el.style.setProperty('z-index', '-1', 'important');
+                // Physically remove if possible
+                if (el.parentNode) el.parentNode.removeChild(el);
+            });
+        });
+
+        // Specific search for the "i" info icon text character
+        const all = document.querySelectorAll('span, div, a, button');
+        for (let i = 0; i < all.length; i++) {
+            const el = all[i];
+            if (el.textContent && (el.textContent.includes('\u24D8') || el.textContent.includes('ⓘ'))) {
+                el.style.setProperty('display', 'none', 'important');
+                // Wix's info button is often a wrapper around this character
+                let parent = el.parentElement;
+                if (parent && parent.tagName === 'A') {
+                    parent.style.setProperty('display', 'none', 'important');
+                }
+            }
+        }
+    }
+
+    // Run every 500ms for 5 seconds to catch late injections, plus use MutationObserver
+    let count = 0;
+    const interval = setInterval(() => {
+        purgeAds();
+        if (++count > 10) clearInterval(interval);
+    }, 500);
+
+    const observer = new MutationObserver(purgeAds);
+    observer.observe(document.documentElement, { childList: true, subtree: true });
+    
+    purgeAds();
+})();
+</script>
 </body>
 
 
